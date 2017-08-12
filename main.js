@@ -1,7 +1,7 @@
 // Create our 'main' state that will contain the game
 var mainState = {
   preload: function() {
-    // Load the bird sprite
+    // Load assets
     game.load.image('bird', 'assets/flappy.png');
     game.load.image('pipe', 'assets/pipe.png');
   },
@@ -24,8 +24,7 @@ var mainState = {
     this.bird.body.gravity.y = 1000;
 
     // Call the 'jump' function when the spacekey is hit
-    var spaceKey = game.input.keyboard.addKey(
-                    Phaser.Keyboard.SPACEBAR);
+    var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     spaceKey.onDown.add(this.jump, this);
 
     // Create an empty group
@@ -33,7 +32,7 @@ var mainState = {
 
     this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
 
-    this.score = 0;
+    this.score = -1;
     this.labelScore = game.add.text(20, 20, "Score: 0",
       { font: "30px Arial", fill: "#ffffff" });
     this.highScore = game.add.text(275, 20, "0",
@@ -51,26 +50,29 @@ var mainState = {
     if (this.bird.y < 0 || this.bird.y > 490)
       this.restartGame();
 
+    if (game.input.activePointer.isDown)
+      this.jump();
+
     game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);
   },
 
   // Make the bird jump
   jump: function() {
-      // Add a vertical velocity to the bird
-      this.bird.body.velocity.y = -350;
+    // Add a vertical velocity to the bird
+    this.bird.body.velocity.y = -350;
   },
 
   // Restart the game
   restartGame: function() {
-      // Start the 'main' state, which restarts the game
-      game.state.start('main');
+    // Start the 'main' state, which restarts the game
+    game.state.start('main');
   },
 
   // Stop the game
   stopGame: function() {
-      // Stop the 'main' state, which stops the game
-      this.restart.text = 'Press the Space Bar to Restart';
-      game.state.stop('main');
+    // Stop the 'main' state, which stops the game
+    // this.restart.text = 'Press the Space Bar to Restart';
+    game.state.stop('main');
   },
 
   addOnePipe: function(x, y) {
