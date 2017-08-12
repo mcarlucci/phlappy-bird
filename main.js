@@ -48,15 +48,15 @@ var mainState = {
     spaceKey.onDown.add(this.restartGame, self);
 
     this.score = -1;
-    this.labelScore = game.add.text(20, 20, "Score: 0",
+    this.labelScore = game.add.text(50, 20, "Score: 0",
       { font: "30px Arial", fill: "#ffffff" });
-    this.highScore = game.add.text(275, 20, "0",
+    this.highScore = game.add.text(240, 20, "0",
       { font: "30px Arial", fill: "#ffffff" });
 
     this.restart = game.add.text(200, 100, "",
       { font: "30px Arial", fill: "#ffffff" });
 
-    this.highScore.text = sessionStorage.highScore !== undefined || sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
+    this.highScore.text = sessionStorage.highScore !== undefined && sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
   },
 
   update: function() {
