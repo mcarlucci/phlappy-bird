@@ -1,5 +1,6 @@
 // Initialize Phaser, and create a 400px by 490px game
 var game = new Phaser.Game(400, 490);
+var timerEnabled = true;
 
 // Create our 'main' state that will contain the games
 var mainState = {
@@ -38,22 +39,14 @@ var mainState = {
 
     this.restartButton = game.add.button(90, 200, 'restart');
     this.restartButton.visible = false;
-    this.restartButton.events.onInputUp.add(function () {
-      console.log('input up')
-      this.restartButton.visible = true;
-      game.paused = true;
-    })
 
-    game.input.onDown.add(this.restartGame, self);
-    spaceKey.onDown.add(this.restartGame, self);
+    game.input.onDown.add(this.restartGame, this);
+    spaceKey.onDown.add(this.restartGame, this);
 
     this.score = -1;
     this.labelScore = game.add.text(50, 20, "Score: 0",
       { font: "30px Arial", fill: "#ffffff" });
     this.highScore = game.add.text(240, 20, "0",
-      { font: "30px Arial", fill: "#ffffff" });
-
-    this.restart = game.add.text(200, 100, "",
       { font: "30px Arial", fill: "#ffffff" });
 
     this.highScore.text = sessionStorage.highScore !== undefined && sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
@@ -88,9 +81,25 @@ var mainState = {
   // Restart the game
   restartGame: function() {
     // Start the 'main' state, which restarts the game
-    if (game.paused) {
-      game.paused = false;
-      game.state.start('main');
+    if (game.paused && timerEnabled) {
+      timerEnabled = false
+      this.restartButton.visible = false;
+      var countdown = game.add.text(185, 220, "3",
+        { font: "60px Arial", fill: "#ffffff" });
+      var count = 3;
+      var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+
+      function timer() {
+        count--;
+        if (count <= 0) {
+          countdown.visible = false;
+          game.paused = false;
+          timerEnabled = true;
+          game.state.start('main');
+          clearInterval(counter);
+        }
+        countdown.text = count;
+      }
     }
   },
 
