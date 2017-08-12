@@ -1,9 +1,13 @@
-// Create our 'main' state that will contain the game
+// Initialize Phaser, and create a 400px by 490px game
+var game = new Phaser.Game(400, 490);
+
+// Create our 'main' state that will contain the games
 var mainState = {
   preload: function() {
     // Load assets
     game.load.image('bird', 'assets/flappy.png');
     game.load.image('pipe', 'assets/pipe.png');
+    game.load.image('restart', 'assets/restart.png', 193, 71);
   },
 
   create: function() {
@@ -32,6 +36,17 @@ var mainState = {
 
     this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
 
+    this.restartButton = game.add.button(90, 200, 'restart');
+    this.restartButton.visible = false;
+    this.restartButton.events.onInputUp.add(function () {
+      console.log('input up')
+      this.restartButton.visible = true;
+      game.paused = true;
+    })
+
+    game.input.onDown.add(this.restartGame, self);
+    spaceKey.onDown.add(this.restartGame, self);
+
     this.score = -1;
     this.labelScore = game.add.text(20, 20, "Score: 0",
       { font: "30px Arial", fill: "#ffffff" });
@@ -48,12 +63,12 @@ var mainState = {
     // If the bird is out of the screen (too high or too low)
     // Call the 'restartGame' function
     if (this.bird.y < 0 || this.bird.y > 490)
-      this.restartGame();
+      this.stopGame();
 
     if (game.input.activePointer.isDown)
       this.jump();
 
-    game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);
+    game.physics.arcade.overlap(this.bird, this.pipes, this.stopGame, null, this);
   },
 
   // Make the bird jump
@@ -62,17 +77,21 @@ var mainState = {
     this.bird.body.velocity.y = -350;
   },
 
-  // Restart the game
-  restartGame: function() {
-    // Start the 'main' state, which restarts the game
-    game.state.start('main');
-  },
-
   // Stop the game
   stopGame: function() {
     // Stop the 'main' state, which stops the game
     // this.restart.text = 'Press the Space Bar to Restart';
-    game.state.stop('main');
+    game.paused = true;
+    this.restartButton.visible = true;
+  },
+
+  // Restart the game
+  restartGame: function() {
+    // Start the 'main' state, which restarts the game
+    if (game.paused) {
+      game.paused = false;
+      game.state.start('main');
+    }
   },
 
   addOnePipe: function(x, y) {
@@ -109,9 +128,6 @@ var mainState = {
     sessionStorage.highScore = this.score > sessionStorage.highScore || sessionStorage.highScore === undefined ? this.score : sessionStorage.highScore;
   },
 };
-
-// Initialize Phaser, and create a 400px by 490px game
-var game = new Phaser.Game(400, 490);
 
 // Add the 'mainState' and call it 'main'
 game.state.add('main', mainState);
