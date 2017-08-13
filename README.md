@@ -2,6 +2,7 @@
 Remake of Flappy Bird using [Phaser](http://phaser.io/)
 
 ### [PLAY NOW!](https://mcarlucci.github.io/phlappy-bird/)
+[<img src="https://i.imgur.com/tGPBpkx.png">](https://mcarlucci.github.io/phlappy-bird/)
 
 ## Setup & Run
 ```
