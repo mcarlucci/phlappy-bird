@@ -183,6 +183,21 @@ var mainState = {
     this.score += 1;
     this.labelScore.text = 'Score: ' + this.score;
     sessionStorage.highScore = this.score > sessionStorage.highScore || sessionStorage.highScore === undefined ? this.score : sessionStorage.highScore;
+
+    // update background color randomly every 10 points
+    if (this.score !== 0 && this.score % 10 === 0) {
+      var colorsArr = [
+        '#FF0000',
+        '#000',
+        '#FFA500',
+        '#800080',
+        '#71c5cf',
+        '#dcdcdc',
+        '#008000'
+      ];
+      var rand = colorsArr[Math.floor(Math.random() * colorsArr.length)];
+      game.stage.backgroundColor = rand;
+    }
   },
 
   setHighScore: function() {
