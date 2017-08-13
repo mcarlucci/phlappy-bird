@@ -1,6 +1,8 @@
 # phlappy-bird
 Remake of Flappy Bird using [Phaser](http://phaser.io/)
 
+### [PLAY NOW!](https://mcarlucci.github.io/phlappy-bird/)
+
 ## Setup & Run
 ```
 git clone https://github.com/mcarlucci/phlappy-bird.git
