@@ -9,9 +9,24 @@ var mainState = {
     game.load.image('bird', 'assets/flappy.png');
     game.load.image('pipe', 'assets/pipe.png');
     game.load.image('restart', 'assets/restart.png', 193, 71);
+    game.load.audio('jump', 'assets/jump.wav');
   },
 
   create: function() {
+    // If this is not a desktop (so it's a mobile device)
+    if (game.device.desktop == false) {
+      // Set the scaling mode to SHOW_ALL to show all the game
+      game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+      // Set a minimum and maximum size for the game
+      // Here the minimum is half the game size
+      // And the maximum is the original game size
+      game.scale.setMinMax(game.width/2, game.height/2, game.width, game.height);
+
+      // Center the game horizontally and vertically
+      game.scale.pageAlignHorizontally = true;
+      game.scale.pageAlignVertically = true;
+    }
     // Change the background color of the game to blue
     game.stage.backgroundColor = '#71c5cf';
 
@@ -27,6 +42,12 @@ var mainState = {
 
     // Add gravity to the bird to make it fall
     this.bird.body.gravity.y = 1000;
+
+    // Move the anchor to the left and downward
+    this.bird.anchor.setTo(-0.2, 0.5);
+
+    // load jump sound
+    this.jumpSound = game.add.audio('jump');
 
     // Call the 'jump' function when the spacekey is hit
     var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -55,17 +76,28 @@ var mainState = {
   update: function() {
     // If the bird is out of the screen (too high or too low)
     // Call the 'restartGame' function
-    if (this.bird.y < 0 || this.bird.y > 490)
+    if (this.bird.y < 0 || this.bird.y > 490) {
       this.stopGame();
+    }
 
-    if (game.input.activePointer.isDown)
+    if (game.input.activePointer.isDown) {
       this.jump();
+    }
+
+    if (this.bird.angle < 20) {
+      this.bird.angle += 1;
+    }
 
     game.physics.arcade.overlap(this.bird, this.pipes, this.stopGame, null, this);
   },
 
   // Make the bird jump
   jump: function() {
+    // play jump sound
+    this.jumpSound.play();
+    // Create an animation on the bird
+    game.add.tween(this.bird).to({angle: -20}, 100).start();
+
     // Add a vertical velocity to the bird
     this.bird.body.velocity.y = -350;
   },
@@ -128,9 +160,11 @@ var mainState = {
 
     // Add the 6 pipes
     // With one big hole at position 'hole' and 'hole + 1'
-    for (var i = 0; i < 8; i++)
-      if (i != hole && i != hole + 1)
+    for (var i = 0; i < 8; i++) {
+      if (i != hole && i != hole + 1) {
         this.addOnePipe(400, i * 60 + 10);
+      }
+    }
 
     this.score += 1;
     this.labelScore.text = 'Score: ' + this.score;
