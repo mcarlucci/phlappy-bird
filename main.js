@@ -1,6 +1,7 @@
 // Initialize Phaser, and create a 400px by 490px game
 var game = new Phaser.Game(400, 490);
 var timerEnabled = true;
+var gameStarted = false;
 
 // Create our 'main' state that will contain the games
 var mainState = {
@@ -27,6 +28,12 @@ var mainState = {
       game.scale.pageAlignHorizontally = true;
       game.scale.pageAlignVertically = true;
     }
+
+    // Initial start of game
+    this.startGameText = game.add.text(35, 425, "Tap or press spacebar to start",
+      { font: "25px Arial", fill: "#ffffff" });
+    this.startGame();
+
     // Change the background color of the game to blue
     game.stage.backgroundColor = '#71c5cf';
 
@@ -61,6 +68,7 @@ var mainState = {
     this.restartButton = game.add.button(90, 200, 'restart');
     this.restartButton.visible = false;
 
+    game.input.onDown.add(this.jump, this);
     game.input.onDown.add(this.restartGame, this);
     spaceKey.onDown.add(this.restartGame, this);
 
@@ -73,15 +81,20 @@ var mainState = {
     this.highScore.text = sessionStorage.highScore !== undefined && sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
   },
 
+  startGame: function() {
+    if (!gameStarted) {
+      game.paused = true;
+      gameStarted = true;
+    } else {
+      this.startGameText.destroy();
+    }
+  },
+
   update: function() {
     // If the bird is out of the screen (too high or too low)
     // Call the 'restartGame' function
     if (this.bird.y < 0 || this.bird.y > 490) {
       this.stopGame();
-    }
-
-    if (game.input.activePointer.isDown) {
-      this.jump();
     }
 
     if (this.bird.angle < 20) {
