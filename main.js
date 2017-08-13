@@ -78,7 +78,7 @@ var mainState = {
     this.highScore = game.add.text(240, 20, "0",
       { font: "30px Arial", fill: "#ffffff" });
 
-    this.highScore.text = sessionStorage.highScore !== undefined && sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
+    this.setHighScore();
   },
 
   startGame: function() {
@@ -121,6 +121,7 @@ var mainState = {
     // this.restart.text = 'Press the Space Bar to Restart';
     game.paused = true;
     this.restartButton.visible = true;
+    this.setHighScore();
   },
 
   // Restart the game
@@ -182,6 +183,10 @@ var mainState = {
     this.score += 1;
     this.labelScore.text = 'Score: ' + this.score;
     sessionStorage.highScore = this.score > sessionStorage.highScore || sessionStorage.highScore === undefined ? this.score : sessionStorage.highScore;
+  },
+
+  setHighScore: function() {
+    this.highScore.text = sessionStorage.highScore !== undefined && sessionStorage.highScore > 0 ? 'High: ' + sessionStorage.highScore : '';
   },
 };
 
